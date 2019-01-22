@@ -109,7 +109,7 @@ class Searchable
 		foreach (static::searchable() as $model_class) {
 			$model = new $model_class;
 
-			if (! is_a($model, SearchableTrait::class)) continue;
+			//if (! is_a($model, SearchableTrait::class)) continue;
 
 			$this->getResults(
 				$model,
@@ -145,7 +145,6 @@ class Searchable
 		return $results;
 	}
 
-
 	/**
 	 * @param $model
 	 * @param $q
@@ -159,9 +158,9 @@ class Searchable
 		}
 
 		if (method_exists($model, 'filterSearchResults')) {
-			$ids = $model->filterSearchResults($model->query());
-
-			if (! $ids) return false;
+			if (!$ids = $model->filterSearchResults($model->query())) {
+				return false;
+			}
 
 			if (! with($ids = $ids->pluck('id'))->count()) return false;
 		}
@@ -182,7 +181,6 @@ class Searchable
 
 		return $sql;
 	}
-
 
 	/**
 	 * @param $ids
@@ -219,9 +217,7 @@ class Searchable
 	{
 		if ($this->config['use_boolean_mode'] && $this->config['allow_operators']) {
 			// Remove duplicate special chars
-			$q = preg_replace('/\-+/', '-', $q);
-			$q = preg_replace('/\++/', '+', $q);
-			$q = preg_replace('/\*+/', '*', $q);
+			$q = preg_replace('/(\-|\+|\*)\\1+/', '\1', $q);
 
 			//remove special chars
 			$q = preg_replace('/(((\-|\+|\*)(\-|\+|\*)+)|(\-|\+)\s)|([\~\@\"\<\>\(\)])/', ' ', $q);
