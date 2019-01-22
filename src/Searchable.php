@@ -109,7 +109,7 @@ class Searchable
 		foreach (static::searchable() as $model_class) {
 			$model = new $model_class;
 
-			if (! is_a($model, SearchableContract::class)) continue;
+			if (! is_a($model, SearchableTrait::class)) continue;
 
 			$this->getResults(
 				$model,
